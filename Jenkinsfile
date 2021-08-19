@@ -13,7 +13,9 @@ pipeline {
             steps {
                 nodejs(nodeJSInstallationName: 'nodejs') {
                     withAWS(credentials: 'aws-service-devsecops-assume') {
-                    sh 'serverless deploy'
+                        sh 'env'
+                        sh 'aws sts get-caller-identity'
+                        sh 'serverless deploy'
                     }
                 }
             }
