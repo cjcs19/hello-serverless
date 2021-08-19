@@ -1,23 +1,16 @@
 pipeline {
     agent any
     stages {
-        stage('build sin test') {
-            steps {
-                nodejs(nodeJSInstallationName: 'nodejs') {
-                    sh 'npm install'                    
-                    // stash name: "ws", includes: "**"
-                }           
-            }
-        }        
-        stage('deploy') {
-            steps {
-                nodejs(nodeJSInstallationName: 'nodejs') {
-                    withAWS(credentials: 'cajecasu') {
-                        sh 'env'
-                        ls -lrt
-                        #sh 'serverless deploy'
-                    }
+        stage('Build') {
+            agent {
+                docker {
+                    image 'gradle:6.7-jdk11'
+                    // Run the container on the node specified at the top-level of the Pipeline, in the same workspace, rather than on a new node entirely:
+                    reuseNode true
                 }
+            }
+            steps {
+                sh 'gradle --version'
             }
         }
     }
