@@ -1,11 +1,22 @@
 pipeline {
-    agent {
-        docker { image 'node:14-alpine' }
-    }
+    agent any
     stages {
-        stage('Test') {
+        stage('build sin test') {
             steps {
-                sh 'node --version'
+                nodejs(nodeJSInstallationName: 'nodejs') {
+                    sh 'npm install'                    
+                    // stash name: "ws", includes: "**"
+                }           
+            }
+        }        
+        stage('deploy') {
+            steps {
+                nodejs(nodeJSInstallationName: 'nodejs') {
+                    withAWS(credentials: 'aws-service-devsecops-assume') {
+                        sh 'serverless deploy'
+                        sh 'env'                        
+                    }
+                }
             }
         }
     }
